@@ -955,13 +955,32 @@ scSitecore.prototype.process = function (request, command, name) {
                         case "yes":
                             form.setModified(false);
                             var parameter;
+                            //---------------Fix the bug #132854----------------------------------------
+
+                            // if (command.disableNotifications == "1") {
+                            // parameter = "item:save(disableNotifications=true, postaction=pipeline:resume(pipelineId=" + request.pipeline + "))";
+
+                            // }
+                            //   else {
+
+                            //   parameter = "item:save(postaction=pipeline:resume(pipelineId=" + request.pipeline + "))";
+                            // }
+
+                            // var saved = form.postRequest("", "", "", parameter);
+
+                            var postParam;
                             if (command.disableNotifications == "1") {
-                                parameter = "item:save(disableNotifications=true, postaction=pipeline:resume(pipelineId=" + request.pipeline + "))";
+                                parameter = "item:save(disableNotifications=true)";
                             }
                             else {
-                                parameter = "item:save(postaction=pipeline:resume(pipelineId=" + request.pipeline + "))";
+                                parameter = "item:save";
                             }
+
+                            postParam = "pipeline:resume(pipelineId=" + request.pipeline + ")";
                             var saved = form.postRequest("", "", "", parameter);
+                            form.postRequest("", "", "", postParam);
+
+			                //---------------END Fix the bug #132854-------------------------------------
 
                             if (saved == "failed") {
                                 form.setModified(true);
